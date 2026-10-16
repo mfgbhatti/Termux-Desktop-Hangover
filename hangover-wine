@@ -4,19 +4,19 @@ echo "creating wine link to hangover-wine"
 ln -sf /data/data/com.termux/files/usr/bin/hangover-wine /data/data/com.termux/files/usr/bin/wine
 
 echo "writing wineserver"
-cat << 'EOF' > "$BIN_DIR/wineserver"
+cat <<'EOF' >"$BIN_DIR/wineserver"
 #!/data/data/com.termux/files/usr/bin/env sh
 exec /data/data/com.termux/files/usr/opt/hangover-wine/bin/wineserver "$@"
 EOF
 
 echo "Downloading winetricks"
 wget -O "$BIN_DIR/winetricks" \
-    https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
+  https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
 chmod +x "$BIN_DIR/winetricks"
 
 echo "Creating desktop file"
 mkdir -p "$APP_DIR"
-cat > "$APP_DIR/photoshop.desktop" << 'EOF'
+cat >"$APP_DIR/photoshop.desktop" <<'EOF'
 [Desktop Entry]
 Version=1.0
 Type=Application
@@ -30,7 +30,7 @@ Terminal=false
 StartupNotify=false
 EOF
 
-cat > "$BIN_DIR/hwrap" << 'EOF'
+cat >"$BIN_DIR/hwrap" <<'EOF'
 #!/data/data/com.termux/files/usr/bin/bash
 #
 cmd="$(basename "$0")"
@@ -73,7 +73,7 @@ esac
 exec wine "$@"
 EOF
 
-cat > "$BIN_DIR/wtwrap" << 'EOF'
+cat >"$BIN_DIR/wtwrap" <<'EOF'
 #!/data/data/com.termux/files/usr/bin/bash
 
 export WINE="/data/data/com.termux/files/usr/bin/hangover-wine"
