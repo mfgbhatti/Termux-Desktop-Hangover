@@ -11,14 +11,10 @@ REPOS=(
 BASE_PKGS=(
   file
   which
-  htop
-  xdg-user-dirs
   fontconfig-utils
   wget
   curl
-  git
   dbus
-  neovim
   zsh
   starship
   build-essential
@@ -33,7 +29,9 @@ BASE_PKGS=(
   lazygit
   lua-language-server
   netcat-openbsd
-  nodejs-lts
+  nodejs
+  npm # termux
+  fdfind
   ripgrep
   ruff
   rust
@@ -80,6 +78,7 @@ PLASMA_PKGS=(
   plasma
   plasma-desktop
   plasma-workspace
+  ark
   kwin-x11
   breeze
   breeze-gtk
