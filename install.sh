@@ -22,6 +22,30 @@ else
   PKG_INSTALL="pkg install -y"
 fi
 
+confirm_action() {
+  printf "%s\n" \
+    "install.sh is not installing below packages" \
+    "1. neovim" \
+    "2. git"
+  read -r -p "Are you sure you want to continue? [y/N] " response
+  case "$response" in
+  [yY][eE][sS] | [yY])
+    true
+    ;;
+  *)
+    false
+    ;;
+  esac
+}
+confirm_action
+if confirm_action; then
+  echo "Proceeding with the installation..."
+  # Place your destructive/important command here
+else
+  echo "Canceling installation..."
+  exit 1
+fi
+
 install() {
   echo
   echo "==> Installing: $*"
@@ -51,25 +75,25 @@ if [ "$USE_PACMAN" != true ]; then
 fi
 
 case "$DESKTOP" in
-  "plasma")
-    install "${PLASMA_PKGS[@]}"
-    SESSION_CMD="startplasma-x11"
-    NAME="KDE"
-    ;;
-  "mate")
-    install "${MATE_PKGS[@]}"
-    SESSION_CMD="mate-session"
-    NAME="MATE"
-    ;;
-  "xfce")
-    install "${XFCE_PKGS[@]}"
-    SESSION_CMD="startxfce4"
-    NAME="XFCE"
-    ;;
-  *)
-    echo "Unknown desktop environment: $DESKTOP"
-    exit 1
-    ;;
+"plasma")
+  install "${PLASMA_PKGS[@]}"
+  SESSION_CMD="startplasma-x11"
+  NAME="KDE"
+  ;;
+"mate")
+  install "${MATE_PKGS[@]}"
+  SESSION_CMD="mate-session"
+  NAME="MATE"
+  ;;
+"xfce")
+  install "${XFCE_PKGS[@]}"
+  SESSION_CMD="startxfce4"
+  NAME="XFCE"
+  ;;
+*)
+  echo "Unknown desktop environment: $DESKTOP"
+  exit 1
+  ;;
 esac
 
 install "${BASE_PKGS[@]}"
@@ -82,7 +106,7 @@ if [ "$INSTALL_WINE" = true ]; then
 fi
 
 echo "Creating X11start and X11stop files"
-cat << EOF > "$BIN_DIR/tx11start"
+cat <<EOF >"$BIN_DIR/tx11start"
 #!/data/data/com.termux/files/usr/bin/env sh
 
 # Mesa / Zink
@@ -117,7 +141,7 @@ dbus-launch --exit-with-session "$SESSION_CMD" >/dev/null 2>&1 &
 EOF
 chmod +x "$BIN_DIR/tx11start"
 
-cat << EOF > "$BIN_DIR/tx11stop"
+cat <<EOF >"$BIN_DIR/tx11stop"
 #!/data/data/com.termux/files/usr/bin/env sh
 kill -9 \$(pgrep -f termux.x11) 2>/dev/null
 kill -9 \$(pgrep -x pulseaudio) 2>/dev/null
@@ -127,7 +151,7 @@ chmod +x "$BIN_DIR/tx11stop"
 
 echo "Creating desktop entries"
 mkdir -p "$APP_DIR"
-cat > "$APP_DIR/tx11stop.desktop" << 'EOF'
+cat >"$APP_DIR/tx11stop.desktop" <<'EOF'
 [Desktop Entry]
 Version=1.0
 Type=Application
@@ -144,7 +168,7 @@ chmod +x "$APP_DIR/tx11stop.desktop"
 
 echo "writing fontconfig file"
 mkdir -p "$HOME/.config/fontconfig"
-cat << EOF > "$HOME/.config/fontconfig/fonts.conf"
+cat <<EOF >"$HOME/.config/fontconfig/fonts.conf"
 <?xml version="1.0"?>
 <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
 <fontconfig>
@@ -169,7 +193,7 @@ cp "$SCRIPT_DIR/mason-installer" "$BIN_DIR/mason-installer"
 chmod +x "$BIN_DIR/mason-installer"
 
 echo "Changing termux extra keys"
-cat > "$HOME/.termux/termux.properties" << 'EOF'
+cat >"$HOME/.termux/termux.properties" <<'EOF'
 extra-keys = [ \
     ['ESC', 'CTRL', ':', '$', 'UP', 'BACKSLASH', 'HOME', 'END'], \
     ['TAB', {key: '-', popup: '|'}, '/', 'LEFT', 'DOWN', 'RIGHT', 'BACKSPACE', {key: KEYBOARD, popup: DRAWER}] \
@@ -182,4 +206,5 @@ EOF
 
 echo "Runing zsh setup"
 source "$SCRIPT_DIR/setup-zsh.sh"
+source "$SCRIPT_DIR/setup-nvim.sh"
 echo "done....."
