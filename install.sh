@@ -37,7 +37,6 @@ confirm_action() {
     ;;
   esac
 }
-confirm_action
 if confirm_action; then
   echo "Proceeding with the installation..."
   # Place your destructive/important command here
@@ -206,5 +205,7 @@ EOF
 
 echo "Runing zsh setup"
 source "$SCRIPT_DIR/setup-zsh.sh"
+
+echo "Runing nvim setup"
 source "$SCRIPT_DIR/setup-nvim.sh"
 echo "done....."
